@@ -15,13 +15,13 @@ This repository serves as a starting point for managing multi-tenant clusters wi
 - Has cluster admin access to the fleet of clusters
 - Has maintainer access to the fleet Git repository
 - Manages cluster wide resources (CRDs, controllers, cluster roles, etc)
-- Onboards the tenant’s main `GitRepository` and `Kustomization` 
+- Onboards the tenant’s main `GitRepository` and `Kustomization`
 - Manages tenants by assigning namespaces, service accounts and role binding to the tenant's apps
 
-**Tenant** 
+**Tenant**
 
 - Has admin access to the namespaces assigned to them by the platform admin
-- Has maintainer access to the tenant Git repository and apps repositories 
+- Has maintainer access to the tenant Git repository and apps repositories
 - Manages app deployments with `GitRepositories` and `Kustomizations`
 - Manages app releases with `HelmRepositories` and `HelmReleases`
 
@@ -71,8 +71,8 @@ Install the Flux CLI and fork this repository on your personal GitHub account
 and export your GitHub username and repo name:
 
 ```sh
-export GITHUB_USER=<your-username>
-export GITHUB_REPO=<repository-name>
+export GITHUB_USER=edc-ops
+export GITHUB_REPO=flux2-multi-tenancy
 ```
 
 Verify that your staging cluster satisfies the prerequisites with:
@@ -85,11 +85,12 @@ Set the `--context` argument to the kubectl context to your staging cluster and 
 
 ```sh
 flux bootstrap github \
-    --context=your-staging-context \
+    --context=kind-staging \
+    --token-auth=false \
+    --read-write-key \
     --owner=${GITHUB_USER} \
     --repository=${GITHUB_REPO} \
     --branch=main \
-    --personal \
     --path=clusters/staging
 ```
 
@@ -106,8 +107,8 @@ Wait for the staging cluster reconciliation to finish:
 
 ```console
 $ flux get kustomizations --watch
-NAME            	READY  	MESSAGE                                                        	
-flux-system     	True   	Applied revision: main/616001c38e7bc81b00ef2c65ac8cfd58140155b8	
+NAME            	READY  	MESSAGE
+flux-system     	True   	Applied revision: main/616001c38e7bc81b00ef2c65ac8cfd58140155b8
 kyverno         	Unknown	Reconciliation in progress
 kyverno-policies	False  	Dependency 'flux-system/kyverno' is not ready
 tenants         	False  	Dependency 'flux-system/kyverno-policies' is not ready
@@ -117,7 +118,7 @@ Verify that the tenant Git repository has been cloned:
 
 ```console
 $ flux -n apps get sources git
-NAME    	READY	MESSAGE 
+NAME    	READY	MESSAGE
 dev-team	True 	Fetched revision: dev-team/ca8ec25405cc03f2f374d2f35f9299d84ced01e4
 ```
 
@@ -133,11 +134,11 @@ Wait for the demo app to be installed:
 
 ```console
 $ watch flux -n apps get helmreleases
-NAME   	READY	MESSAGE                         	REVISION	SUSPENDED 
-podinfo	True 	Release reconciliation succeeded	5.0.3   	False 
+NAME   	READY	MESSAGE                         	REVISION	SUSPENDED
+podinfo	True 	Release reconciliation succeeded	5.0.3   	False
 ```
 
-To expand on this example, check the [enforce tenant isolation](#enforce-tenant-isolation) for security related considerations. 
+To expand on this example, check the [enforce tenant isolation](#enforce-tenant-isolation) for security related considerations.
 
 [Personal Access Token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
 
@@ -180,7 +181,7 @@ flux create kustomization dev-team \
 Create the base `kustomization.yaml` file:
 
 ```sh
-cd ./tenants/base/dev-team/ && kustomize create --autodetect --namespace apps 
+cd ./tenants/base/dev-team/ && kustomize create --autodetect --namespace apps
 ```
 
 Create the staging overlay and set the path to the staging dir inside the tenant repository:
@@ -221,21 +222,21 @@ be leveraged to the same effect.
 
 ## Enforce tenant isolation
 
-To enforce tenant isolation, cluster admins must configure Flux to reconcile 
+To enforce tenant isolation, cluster admins must configure Flux to reconcile
 the `Kustomization` and `HelmRelease` kinds by impersonating a service account
-from the namespace where these objects are created. 
+from the namespace where these objects are created.
 
-Flux has built-in [multi-tenancy lockdown] features which enables tenant isolation 
+Flux has built-in [multi-tenancy lockdown] features which enables tenant isolation
 at Control Plane level without the need of external admission controllers (e.g. Kyverno). The
 recommended patch:
 
 - Enforce controllers to block cross namespace references.
   Meaning that a tenant can’t use another tenant’s sources or subscribe to their events.
-- Deny accesses to Kustomize remote bases, thus ensuring all resources refer to local files. 
+- Deny accesses to Kustomize remote bases, thus ensuring all resources refer to local files.
   Meaning that only approved Flux Sources can affect the cluster-state.
 - Sets a default service account via `--default-service-account` to `kustomize-controller` and `helm-controller`.
-  Meaning that, if a tenant does not specify a service account in a Flux `Kustomization` or 
-  `HelmRelease`, it would automatically default to said account. 
+  Meaning that, if a tenant does not specify a service account in a Flux `Kustomization` or
+  `HelmRelease`, it would automatically default to said account.
 
 > **NOTE:** It is recommended that the default service account has no privileges.
 > And each named service account used observes the least privilege model.
@@ -283,15 +284,15 @@ patches:
 ### Side Effects
 
 When Flux is bootstrapped with the patch both `kustomize-controller` and `helm-controller` will impersonate the `default`
-service account in the tenant namespace when applying changes to the cluster. The `default` service account 
+service account in the tenant namespace when applying changes to the cluster. The `default` service account
 exist in all namespaces and should always be kept without any privileges.
 
-To enable a tenant to operate, a service account must be created with the required permissions and its name set 
+To enable a tenant to operate, a service account must be created with the required permissions and its name set
 to the `spec.serviceAccountName` of all `Kustomization` and `HelmRelease` resources the tenant has.
 
 ### Tenancy policies
 
-Depending on the aimed security posture, the Platform Admin may impose additional policies to enforce specific 
+Depending on the aimed security posture, the Platform Admin may impose additional policies to enforce specific
 behaviours. Below are a few consideration points, some of which are already implemented in this repository.
 
 #### Image provenance
@@ -333,12 +334,13 @@ spec:
 ```
 
 Other policies to explore:
+
 - Restrict what repositories can be accessed in each cluster. Some deployments may need this to be environment-specific.
 - Align image policies with pods that require `securityContext` that are highly privileged.
 
 #### Flux Sources
 
-Flux uses sources to define the origin of flux manifests. Some deployments may require that 
+Flux uses sources to define the origin of flux manifests. Some deployments may require that
 all of them come from a specific GitHub Organisation, as the
 [verify-git-repositories policy](infrastructure/kyverno-policies/verify-git-repositories.yaml) shows:
 
@@ -362,33 +364,34 @@ spec:
       validate:
         message: ".spec.url must be from a repository within the organisation X"
         anyPattern:
-        - spec:
-            url: "https://github.com/fluxcd/?*" # repositories in fluxcd via https
-        - spec:
-            url: "ssh://git@github.com:fluxcd/?*" # repositories in fluxcd via ssh
+          - spec:
+              url: "https://github.com/fluxcd/?*" # repositories in fluxcd via https
+          - spec:
+              url: "ssh://git@github.com:fluxcd/?*" # repositories in fluxcd via ssh
 ```
 
 Other policies to explore:
+
 - Expand the policies to `HelmRepository` and `Bucket`.
 - For `HelmRepository` and `GitRepository` consider which protocols should be allowed.
 - For `Bucket`, consider restrictions on providers and regions.
 
 #### Make serviceAccountName mandatory
 
-The lockdown patch sets a default service account that is applied to any `Kustomization` and `HelmRelease` 
+The lockdown patch sets a default service account that is applied to any `Kustomization` and `HelmRelease`
 instances that have no `spec.ServiceAccountName` set.
 
 If the recommended best practices above are followed, such instances won't be able to apply changes to
-a cluster as the default service account has no permissions to do so. 
+a cluster as the default service account has no permissions to do so.
 
-An additional extra could be taken to make the `spec.ServiceAccountName` field  mandatory via a validation 
+An additional extra could be taken to make the `spec.ServiceAccountName` field mandatory via a validation
 webhook, for example [Kyverno](https://github.com/kyverno/kyverno) or
 [OPA Gatekeeper](https://github.com/open-policy-agent/gatekeeper).
 Resulting on `Kustomization` and `HelmRelease` instances not being admitted when `spec.ServiceAccountName` is not set.
 
 #### Reconciliation hierarchy
 
-On cluster bootstrap, you need to configure Flux to deploy the validation webhook and its policies before 
+On cluster bootstrap, you need to configure Flux to deploy the validation webhook and its policies before
 reconciling the tenants repositories.
 
 Inside the `clusters` dir we define in which order the infrastructure items,
@@ -404,7 +407,7 @@ and the tenant workloads are going to be reconciled on the staging and productio
     └── tenants.yaml
 ```
 
-First we setup the reconciliation of custom resource definitions and their controllers. For this 
+First we setup the reconciliation of custom resource definitions and their controllers. For this
 example we'll use [Kyverno](https://github.com/kyverno/kyverno):
 
 ```yaml
@@ -424,7 +427,7 @@ spec:
   timeout: 5m
 ```
 
-Then we setup [cluster policies](./infrastructure/kyverno-policies/verify-git-repositories.yaml) 
+Then we setup [cluster policies](./infrastructure/kyverno-policies/verify-git-repositories.yaml)
 (Kyverno custom resources) to enforce a specific GitHub Organisation:
 
 ```yaml
@@ -471,8 +474,8 @@ that don't originate from a specific GitHub Organisation, in our case `fluxcd`.
 ## Onboard tenants with private repositories
 
 You can configure Flux to connect to a tenant repository
-using SSH or token-based authentication. The tenant credentials will be stored 
-in the platform admin repository as a Kubernetes secret. 
+using SSH or token-based authentication. The tenant credentials will be stored
+in the platform admin repository as a Kubernetes secret.
 
 ### Encrypt Kubernetes secrets in Git
 
@@ -508,7 +511,7 @@ kubectl create secret generic sops-gpg \
 
 You should store the GPG private key in a safe place for disaster recovery,
 in case you need to rebuild the cluster from scratch.
-The GPG public key can be shared with the platform team, so anyone with 
+The GPG public key can be shared with the platform team, so anyone with
 write access to the platform repository can encrypt secrets.
 
 ### Git over SSH
@@ -580,24 +583,24 @@ Configure Flux to decrypt secrets using the `sops-gpg` key:
 
 ```yaml
 flux create kustomization tenants \
-  --depends-on=kyverno-policies \
-  --source=flux-system \
-  --path="./tenants/staging" \
-  --prune=true \
-  --interval=5m \
-  --validation=client \
-  --decryption-provider=sops \
-  --decryption-secret=sops-gpg \
-  --export > ./clusters/staging/tenants.yaml
+--depends-on=kyverno-policies \
+--source=flux-system \
+--path="./tenants/staging" \
+--prune=true \
+--interval=5m \
+--validation=client \
+--decryption-provider=sops \
+--decryption-secret=sops-gpg \
+--export > ./clusters/staging/tenants.yaml
 ```
 
 With the above configuration, the Flux instance running on the staging cluster will:
 
-* create the tenant namespace, service account and role binding
-* decrypt the tenant Git credentials using the GPG private key
-* create the tenant Git credentials Kubernetes secret in the tenant namespace
-* clone the tenant repository using the supplied credentials
-* apply the `./staging` directory from the tenant's repo using the tenant's service account
+- create the tenant namespace, service account and role binding
+- decrypt the tenant Git credentials using the GPG private key
+- create the tenant Git credentials Kubernetes secret in the tenant namespace
+- clone the tenant repository using the supplied credentials
+- apply the `./staging` directory from the tenant's repo using the tenant's service account
 
 ## Testing
 
@@ -606,10 +609,10 @@ a pull request is merged into the main branch and synced on the cluster.
 
 This repository contains the following GitHub CI workflows:
 
-* the [test](./.github/workflows/test.yaml) workflow validates the Kubernetes manifests
+- the [test](./.github/workflows/test.yaml) workflow validates the Kubernetes manifests
   and Kustomize overlays with [kubeconform](https://github.com/yannh/kubeconform)
-* the [e2e](./.github/workflows/e2e.yaml) workflow starts a Kubernetes cluster in CI
+- the [e2e](./.github/workflows/e2e.yaml) workflow starts a Kubernetes cluster in CI
   and tests the staging setup by running Flux in Kubernetes Kind
 
-
 [multi-tenancy lockdown]: https://fluxcd.io/flux/installation/configuration/multitenancy/
+
