@@ -5,3 +5,11 @@ metadata:
   namespace: apps
 spec:
   path: ./staging
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: dev-team
+  namespace: apps
+spec:
+  url: https://github.com/edc-ops/flux2-multi-tenancy
