@@ -11,7 +11,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  url: ssh://git@github.com/edc-ops/flux2-multi-tenancy
+  url: https://github.com/edc-ops/flux2-multi-tenancy
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
