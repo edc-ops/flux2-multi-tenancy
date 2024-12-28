@@ -40,5 +40,6 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: monitoring-admin
+    namespace: monitoring
     apiGroup: ""
 
