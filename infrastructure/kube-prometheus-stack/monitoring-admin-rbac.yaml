@@ -22,8 +22,9 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: monitoring-admin
-    namespace: monitoring
+    apiGroup: ""
 roleRef:
   kind: Role
   name: monitoring-admin
-  apiGroup: rbac.authorization.k8s.io
+  apiGroup: ""
+
