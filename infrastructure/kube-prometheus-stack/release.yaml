@@ -10,7 +10,7 @@ metadata:
   namespace: monitoring
 spec:
   interval: 5m
-  serviceAccountName: helm-controller
+  serviceAccountName: monitoring-admin
   chart:
     spec:
       chart: kube-prometheus-stack
