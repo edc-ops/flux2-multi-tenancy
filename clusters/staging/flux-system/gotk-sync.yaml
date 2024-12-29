@@ -6,12 +6,12 @@ metadata:
   name: flux-system
   namespace: flux-system
 spec:
-  interval: 2m0s
+  interval: 1m0s
   ref:
     branch: main
   secretRef:
     name: flux-system
-  url: https://github.com/edc-ops/flux2-multi-tenancy
+  url: ssh://git@github.com/edc-ops/flux2-multi-tenancy
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -19,10 +19,9 @@ metadata:
   name: flux-system
   namespace: flux-system
 spec:
-  interval: 2m0s
+  interval: 10m0s
   path: ./clusters/staging
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-
