@@ -1,19 +1,84 @@
 ---
+# Experiment Template
+# This template defines the structure for experimental investigations with AI-readable metadata.
+# All fields marked with [Required] must be filled out.
+# Remove all comments and placeholder text when using this template.
+
 metadata:
+  # [Required] Document type identifier
   type: experiment
-  status: planned|running|completed|abandoned
-  priority: low|medium|high
+  
+  # [Required] Current status of the experiment
+  # Valid values: draft|planned|running|completed|abandoned|archived
+  status: planned
+  
+  # [Required] Experiment priority level
+  # Valid values: low|medium|high
+  priority: medium
+  
+  # [Required] List of dependent experiments or external dependencies
+  # Format: ["experiment-id-1", "experiment-id-2"] or ["external-dependency-1"]
   dependencies: []
+  
+  # [Required] Creation timestamp
+  # Format: ISO-8601 (YYYY-MM-DD)
   created: YYYY-MM-DD
+  
+  # [Required] Last update timestamp
+  # Format: ISO-8601 (YYYY-MM-DD)
   updated: YYYY-MM-DD
+  
+  # [Required] Semantic version number
+  # Format: major.minor.patch
   version: 1.0.0
+  
+  # [Required] Categorization tags
+  # Minimum 1 tag required
   tags: []
+  
+  # [Required] AI-specific context and metadata
   ai_context:
-    experiment_type: performance|reliability|usability|feature
+    # [Required] Type of experiment being conducted
+    # Valid values: performance|reliability|usability|feature|security|scalability
+    experiment_type: performance
+    
+    # [Required] Clear statement of what is being tested
+    # Format: string, must be a complete hypothesis statement
     hypothesis: ""
+    
+    # [Required] Expected results if hypothesis is correct
+    # Format: string, must describe measurable outcomes
     expected_outcome: ""
-    confidence_level: low|medium|high
-    risk_level: low|medium|high
+    
+    # [Required] Level of confidence in the hypothesis
+    # Valid values: low|medium|high
+    confidence_level: medium
+    
+    # [Required] Level of risk in conducting the experiment
+    # Valid values: low|medium|high
+    risk_level: medium
+    
+    # [Required] Success criteria metrics
+    # Minimum 1 metric required
+    # Format: Array of objects with 'metric' and 'threshold' fields
+    success_metrics: []
+    
+    # [Required] Control factors for the experiment
+    # Minimum 1 factor required
+    control_factors: []
+    
+    # [Required] Variables being tested
+    # Format: Object with 'independent' and 'dependent' arrays
+    variables: {
+      "independent": [],
+      "dependent": []
+    }
+    
+    # [Optional] Resource requirements
+    resource_requirements: []
+    
+    # [Optional] Additional context for AI processing
+    context_notes: ""
 ---
 
 # [Experiment Title]
