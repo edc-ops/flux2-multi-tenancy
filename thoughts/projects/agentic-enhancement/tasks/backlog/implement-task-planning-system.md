@@ -13,7 +13,6 @@ metadata:
     - core-feature
   ai_context:
     task_type: feature
-    estimated_effort: high
     complexity: high
     impact: high
     automated_execution: false
@@ -29,14 +28,12 @@ Design and implement the core AI task planning system that will enable autonomou
 - Implement task planning algorithms
 - Develop resource allocation system
 - Build priority calculation engine
-- Create task estimation framework
 
 ## Requirements
 - Task representation must include dependencies, priorities, and resource requirements
 - Planning algorithms must handle complex dependency chains
 - System must support dynamic priority adjustments
 - Resource allocation must optimize for efficiency
-- Time estimation must learn from historical data
 - System must integrate with existing project structure
 
 ## Dependencies
@@ -58,12 +55,7 @@ Design and implement the core AI task planning system that will enable autonomou
    - Build resource allocation optimizer
    - Develop scheduling algorithm
 
-3. Create estimation system
-   - Design historical data collection
-   - Implement estimation algorithms
-   - Create feedback loop for accuracy improvement
-
-4. Build integration layer
+3. Build integration layer
    - Implement file system integration
    - Create git operation handlers
    - Develop documentation updaters
@@ -85,22 +77,16 @@ Design and implement the core AI task planning system that will enable autonomou
   - Calculate task priorities
   - Resolve dependencies
   - Allocate resources efficiently
-  - Generate accurate time estimates
 - Integration with existing tools and workflows
 - Measurable improvement in task completion efficiency
 - Accurate dependency tracking and resolution
 - Reliable resource allocation
-
-## Timeline
-- Estimated Start: 2024-01-15
-- Target Completion: 2024-02-15
 
 ## Progress Tracking
 
 ### Milestones
 - [ ] Task representation format defined and implemented
 - [ ] Core planning algorithms developed and tested
-- [ ] Estimation system implemented
 - [ ] Integration layer completed
 - [ ] Monitoring and metrics system implemented
 - [ ] End-to-end testing completed
@@ -108,7 +94,6 @@ Design and implement the core AI task planning system that will enable autonomou
 
 ### Blockers
 - Requires completion of AI-readable documentation structure
-- Needs historical data for estimation training
 
 ## Notes
 - Consider implementing a fallback mode for complex scenarios
