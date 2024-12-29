@@ -19,7 +19,8 @@ projects/
 │   ├── decisions.md      - Project-specific decisions
 │   ├── experiments.md    - Project-specific experiments
 │   ├── history.md        - Project timeline
-│   └── plans.md         - Prioritized implementation plan
+│   ├── plans.md          - Detailed implementation planning
+│   └── testing.md        - Comprehensive test strategy
 ```
 
 ## Usage Guidelines
@@ -35,10 +36,17 @@ projects/
    - Keep project-specific concerns isolated
 
 3. Planning Structure:
-   - Organize tasks by priority, not timeline
-   - Clearly document dependencies between tasks
-   - Define success criteria for each priority item
-   - Include risk assessment and mitigation strategies
+   - Organize tasks by priority with detailed implementation strategy
+   - Document comprehensive requirements for each task:
+     * Implementation details and subtasks
+     * Documentation requirements
+     * Testing requirements
+     * Verification criteria
+   - Define measurable success criteria with:
+     * Verification methods
+     * Testing approaches
+     * Documentation requirements
+   - Include detailed risk assessment and mitigation strategies
 
 4. Documentation Standards:
    - Use clear, descriptive titles
@@ -46,21 +54,37 @@ projects/
    - Document both successes and failures
    - Link to relevant issues/PRs
    - Use consistent markdown formatting
+   - Include for each component:
+     * API documentation
+     * Architecture diagrams
+     * Configuration guides
+     * Deployment procedures
+     * Troubleshooting guides
 
-5. Project Creation:
+5. Testing Framework:
+   - Define comprehensive test strategy:
+     * Unit testing requirements
+     * Integration testing approach
+     * End-to-end testing plans
+   - Document test cases and scenarios
+   - Specify verification methods
+   - Define quality gates and metrics
+   - Maintain test environment requirements
+
+6. Project Creation:
    - Copy template structure from /projects/template
    - Initialize all required documentation files
    - Define clear priorities and dependencies
    - Establish measurable success criteria
 
-6. Regular Maintenance:
+7. Regular Maintenance:
    - Review and update priority lists
    - Track completed items
    - Reassess dependencies
    - Update risk assessments
    - Clean up outdated information
 
-7. Dependencies:
+8. Dependencies:
    - Document both technical and operational dependencies
    - Track cross-project dependencies in root documentation
    - Regularly validate dependency status
