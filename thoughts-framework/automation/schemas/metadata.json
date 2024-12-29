@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Thoughts Framework Metadata Schema",
+  "description": "JSON Schema for validating metadata in thoughts framework documents",
+  "type": "object",
+  "required": ["metadata"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "type",
+        "status",
+        "priority",
+        "dependencies",
+        "created",
+        "updated",
+        "version",
+        "tags",
+        "ai_context"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["task", "decision", "experiment", "plan", "history"],
+          "description": "The type of document"
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the document",
+          "oneOf": [
+            {
+              "enum": ["draft", "backlog", "active", "completed", "blocked", "archived"],
+              "description": "Valid statuses for tasks"
+            },
+            {
+              "enum": ["draft", "proposed", "accepted", "rejected", "superseded", "deprecated"],
+              "description": "Valid statuses for decisions"
+            },
+            {
+              "enum": ["draft", "planned", "running", "completed", "abandoned", "archived"],
+              "description": "Valid statuses for experiments"
+            }
+          ]
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Priority level"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of dependent items or external dependencies"
+        },
+        "created": {
+          "type": "string",
+          "format": "date",
+          "description": "Creation date in YYYY-MM-DD format"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date",
+          "description": "Last update date in YYYY-MM-DD format"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version number"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Categorization tags"
+        },
+        "ai_context": {
+          "type": "object",
+          "required": ["complexity", "impact", "automated_execution"],
+          "properties": {
+            "task_type": {
+              "type": "string",
+              "enum": ["feature", "infrastructure", "bugfix", "documentation", "enhancement", "maintenance"],
+              "description": "Type of task (for tasks only)"
+            },
+            "decision_type": {
+              "type": "string",
+              "enum": ["architectural", "technical", "process", "tooling", "infrastructure", "security"],
+              "description": "Type of decision (for decisions only)"
+            },
+            "experiment_type": {
+              "type": "string",
+              "enum": ["performance", "reliability", "usability", "feature", "security", "scalability"],
+              "description": "Type of experiment (for experiments only)"
+            },
+            "complexity": {
+              "type": "string",
+              "enum": ["low", "medium", "high"],
+              "description": "Estimated complexity level"
+            },
+            "impact": {
+              "type": "string",
+              "enum": ["low", "medium", "high"],
+              "description": "Business/technical impact level"
+            },
+            "automated_execution": {
+              "type": "boolean",
+              "description": "Whether this item can be automated"
+            },
+            "estimated_effort": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Estimated effort in person-hours"
+            },
+            "required_capabilities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Required capabilities for execution"
+            },
+            "risk_factors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Potential risk factors"
+            },
+            "success_criteria": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Criteria for success"
+            },
+            "context_notes": {
+              "type": "string",
+              "description": "Additional context for AI processing"
+            },
+            "hypothesis": {
+              "type": "string",
+              "description": "Experiment hypothesis (for experiments only)"
+            },
+            "expected_outcome": {
+              "type": "string",
+              "description": "Expected experiment outcome (for experiments only)"
+            },
+            "confidence_level": {
+              "type": "string",
+              "enum": ["low", "medium", "high"],
+              "description": "Confidence level in hypothesis/decision"
+            },
+            "risk_level": {
+              "type": "string",
+              "enum": ["low", "medium", "high"],
+              "description": "Risk level assessment"
+            },
+            "alternatives_considered": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["option", "reason_rejected"],
+                "properties": {
+                  "option": {
+                    "type": "string"
+                  },
+                  "reason_rejected": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Alternative options considered (for decisions only)"
+            }
+          },
+          "description": "AI-specific context and metadata"
+        }
+      }
+    }
+  }
+}
