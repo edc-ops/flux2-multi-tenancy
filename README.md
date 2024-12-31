@@ -616,3 +616,55 @@ This repository contains the following GitHub CI workflows:
 
 [multi-tenancy lockdown]: https://fluxcd.io/flux/installation/configuration/multitenancy/
 
+## Valero Backups Infrastructure Deployment
+
+### Purpose
+
+The Valero backups infrastructure deployment is designed to provide backup and restore capabilities for Kubernetes clusters. Valero is a tool that helps you safely back up and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes.
+
+### Configuration
+
+The Valero backups infrastructure deployment is configured using the following files:
+
+- `clusters/production/infrastructure.yaml`
+- `clusters/staging/infrastructure.yaml`
+- `infrastructure/valero-backups/kustomization.yaml`
+- `infrastructure/valero-backups/valero-backups.yaml`
+
+### Bootstrapping Valero Backups
+
+To bootstrap Valero backups in the staging and production clusters, follow these steps:
+
+1. Ensure that your staging and production clusters satisfy the prerequisites with:
+
+    ```sh
+    flux check --pre
+    ```
+
+2. Set the `--context` argument to the kubectl context to your staging cluster and bootstrap Flux:
+
+    ```sh
+    flux bootstrap github \
+        --context=kind-staging \
+        --token-auth=false \
+        --read-write-key \
+        --owner=${GITHUB_USER} \
+        --repository=${GITHUB_REPO} \
+        --branch=main \
+        --path=clusters/staging
+    ```
+
+3. Repeat the above step for the production cluster by setting the `--context` argument to the kubectl context to your production cluster and bootstrap Flux:
+
+    ```sh
+    flux bootstrap github \
+        --context=kind-production \
+        --token-auth=false \
+        --read-write-key \
+        --owner=${GITHUB_USER} \
+        --repository=${GITHUB_REPO} \
+        --branch=main \
+        --path=clusters/production
+    ```
+
+4. Wait for the cluster reconciliation to finish and verify that the Valero backups infrastructure deployment is applied successfully.

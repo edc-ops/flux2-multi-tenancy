@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: valero-config
+  namespace: valero-backups
+data:
+  backupStorageLocation:
+    name: default
+    provider: file
+    config:
+      storagePath: /var/velero/backups
+  volumeSnapshotLocation:
+    name: default
+    provider: hostPath
+    config:
+      path: /var/velero/snapshots
