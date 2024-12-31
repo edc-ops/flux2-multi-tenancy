@@ -6,12 +6,11 @@ metadata:
 data:
   backupStorageLocation:
     name: default
-    provider: aws
-    bucket: valero-backups
+    provider: file
     config:
-      region: us-west-2
+      storagePath: /var/velero/backups
   volumeSnapshotLocation:
     name: default
-    provider: aws
+    provider: hostPath
     config:
-      region: us-west-2
+      path: /var/velero/snapshots
