@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: valero-backups
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valero-backups
+  namespace: valero-backups
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valero-backups
+  template:
+    metadata:
+      labels:
+        app: valero-backups
+    spec:
+      containers:
+        - name: valero
+          image: velero/velero:v1.6.3
+          ports:
+            - containerPort: 8085
+          env:
+            - name: VELERO_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: plugins
+              mountPath: /plugins
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+      volumes:
+        - name: plugins
+          emptyDir: {}

@@ -616,3 +616,17 @@ This repository contains the following GitHub CI workflows:
 
 [multi-tenancy lockdown]: https://fluxcd.io/flux/installation/configuration/multitenancy/
 
+## Valero Backups Infrastructure Deployment
+
+### Purpose
+
+The Valero backups infrastructure deployment is designed to provide backup and restore capabilities for Kubernetes clusters. Valero is a tool that helps you safely back up and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes.
+
+### Configuration
+
+The Valero backups infrastructure deployment is configured using the following files:
+
+- `clusters/production/infrastructure.yaml`
+- `clusters/staging/infrastructure.yaml`
+- `infrastructure/valero-backups/kustomization.yaml`
+- `infrastructure/valero-backups/valero-backups.yaml`
